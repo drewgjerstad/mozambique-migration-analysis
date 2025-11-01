@@ -89,14 +89,25 @@ def get_ipums_data(collection:str, description:str, samples:list,
     )
     print(f"Shape of IPUMS Data Extract: {ipums_df.shape}")
 
+    # Replace categorical with labels
+    print("Updating DataFrame with labels...")
+    new_ipums_df = pd.DataFrame()
+    for var in (ipums_df.columns):
+        var_dict = ddi.get_variable_info(var).codes
+        inv_var_dict = {value: key for key, value in var_dict.items()}
+        if len(inv_var_dict) > 0:
+            new_ipums_df[var] = ipums_df[var].map(inv_var_dict)
+        else:
+            new_ipums_df[var] = ipums_df[var]
+
     # Save to PKL (if specified)
     if pkl_export:
         print(f"Saving IPUMS DataFrame to {pkl_path} ...")
         with open(pkl_path, 'wb') as f:
-            pickle.dump(ipums_df, f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump(new_ipums_df, f, pickle.HIGHEST_PROTOCOL)
         f.close()
 
     # Report Completion
     print("IPUMS dataset extraction complete.")
 
-    return ipums_df
+    return new_ipums_df
