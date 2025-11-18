@@ -7,18 +7,29 @@ from pathlib import Path
 from ipumspy import IpumsApiClient, MicrodataExtract, readers#, ddi
 import pandas as pd
 
+from .preprocessing import (
+    update_df_labels,
+    transform_df,
+    process_mig_response,
+    remove_metadata_columns,
+    remove_detailed_columns,
+    standardize_binary_vars,
+    binarize_categorical_vars,
+    bin_continuous_vars,
+)
+
 
 def load_ipums_from_pkl(filepath:Path)->pd.DataFrame:
     """Load IPUMS dataset from pickle file (`filepath`)."""
     with open(filepath, 'rb') as f:
-        ipums_df = pickle.load(f)
+        mig1_df, mig5_df = pickle.load(f)
 
-    return ipums_df
+    return mig1_df, mig5_df
 
 
 def get_ipums_data(collection:str, description:str, samples:list,
                    variables:list, api_key:str, download_dir:Path,
-                   pkl_export:bool=True, pkl_path:Path=None) -> pd.DataFrame:
+                   pkl_export:bool=True, pkl_path:Path=None) -> tuple:
     """
     Create IPUMS dataset extract, download it locally, and if requested, export
     dataframe to pickle file (`pkl_export` and `pkl_path`).
@@ -49,7 +60,8 @@ def get_ipums_data(collection:str, description:str, samples:list,
     # Check Pickle Export Parameters
     if pkl_export and pkl_path is None:
         raise ValueError(
-            "Error: pkl_export is True, pkl_path is not specified.")
+            "Error: pkl_export is True, pkl_path is not specified."
+        )
 
     # Verify Download Directory
     os.makedirs(download_dir, exist_ok=True)
@@ -70,12 +82,14 @@ def get_ipums_data(collection:str, description:str, samples:list,
     print(f"Extract submitted to IPUMS. Extract ID: {extract.extract_id}.")
 
     # Wait for Extract
-    print("Waiting for extract to finish processing on IPUMS server...")
+    print("Waiting for extract to finish processing on IPUMS server...", end="")
     ipums.wait_for_extract(extract)
+    print(" [complete]")
 
     # Download Extract
-    print(f"Downloading extract to {download_dir} ...")
+    print(f"Downloading extract to {download_dir} ...", end="")
     ipums.download_extract(extract, download_dir=download_dir)
+    print(" [complete]")
 
     # Read Data Dictionary
     ddi_file = os.path.join(download_dir,
@@ -83,31 +97,61 @@ def get_ipums_data(collection:str, description:str, samples:list,
     ddi = readers.read_ipums_ddi(ddi_file)
 
     # Extract Data from Dictionary
-    print("Extracting data from extract to DataFrame...")
+    print("Extracting data from extract to DataFrame...", end="")
     ipums_df = readers.read_microdata(
         ddi, download_dir / ddi.file_description.filename
     )
-    print(f"Shape of IPUMS Data Extract: {ipums_df.shape}")
+    print(" [complete]")
 
-    # Replace categorical with labels
-    print("Updating DataFrame with labels...")
-    new_ipums_df = pd.DataFrame()
-    for var in (ipums_df.columns):
-        var_dict = ddi.get_variable_info(var).codes
-        inv_var_dict = {value: key for key, value in var_dict.items()}
-        if len(inv_var_dict) > 0:
-            new_ipums_df[var] = ipums_df[var].map(inv_var_dict)
-        else:
-            new_ipums_df[var] = ipums_df[var]
+    # Replace categorical columns with labels
+    print("Updating DataFrame with labels...", end="")
+    ipums_df = update_df_labels(ipums_df, ddi)
+    print(" [complete]")
+
+    # Transform to fix NIU, unknown values (and other issues)
+    print("Transforming data to fix NIU/unknown values, other issues...", end="")
+    ipums_df = transform_df(ipums_df)
+    print(" [complete]")
+
+    # Process Migration Response
+    print("Processing migration response variables (MIGRATE1, MIGRATE5)...", end="")
+    mig1_data, mig5_data = process_mig_response(ipums_df)
+    print(" [complete]")
+
+    # Drop Metadata Columns
+    print("Removing metadata columns unnecessary for analyses...", end="")
+    mig1_data, mig5_data = remove_metadata_columns(mig1_data, mig5_data)
+    print(" [complete]")
+
+    # Drop Detailed Columns
+    print("Removing detailed columns unnecessary for analyses...", end="")
+    mig1_data, mig5_data = remove_detailed_columns(mig1_data, mig5_data)
+    print(" [complete]")
+
+    # Standardizing Binary Variables
+    print("Standardizing binary variables...", end="")
+    mig1_data, mig5_data = standardize_binary_vars(mig1_data, mig5_data)
+    print(" [complete]")
+
+    # Binarizing Categorical Variables
+    print("Binarizing categorical variables...", end="")
+    mig1_data, mig5_data = binarize_categorical_vars(mig1_data, mig5_data)
+    print(" [complete]")
+
+    # Binning Continuous Variables
+    print("Binning continuous variables...", end="")
+    mig1_data, mig5_data = bin_continuous_vars(mig1_data, mig5_data)
+    print(" [complete]")
 
     # Save to PKL (if specified)
     if pkl_export:
-        print(f"Saving IPUMS DataFrame to {pkl_path} ...")
+        print(f"Saving IPUMS DataFrame to {pkl_path} ...", end="")
         with open(pkl_path, 'wb') as f:
-            pickle.dump(new_ipums_df, f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump((mig1_data, mig5_data), f, pickle.HIGHEST_PROTOCOL)
         f.close()
+        print(" [complete]")
 
     # Report Completion
-    print("IPUMS dataset extraction complete.")
+    print("\n**** IPUMS dataset extraction and processing complete. ****")
 
-    return new_ipums_df
+    return mig1_data, mig5_data
