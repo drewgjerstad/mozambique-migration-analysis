@@ -13,7 +13,8 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     f1_score,
-    roc_auc_score
+    roc_auc_score,
+    roc_curve
 )
 
 class NeuralNetwork(nn.Module):
@@ -207,7 +208,8 @@ def evaluate_neural_net(model, X_test, y_test):
         'precision': precision_score(all_labels, all_preds, average='weighted'),
         'recall': recall_score(all_labels, all_preds, average='weighted'),
         'f1': f1_score(all_labels, all_preds, average='weighted'),
-        'roc_auc': roc_auc_score(all_labels, all_preds)
+        'roc_auc': roc_auc_score(all_labels, np.array(all_probs)[:, 1]),
+        'roc_curve': roc_curve(all_labels, np.array(all_probs)[:, 1])
     }
 
     return metrics

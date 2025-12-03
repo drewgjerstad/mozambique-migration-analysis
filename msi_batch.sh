@@ -1,0 +1,23 @@
+#!/bin/bash -l
+
+# SETUP RESOURCE
+#SBATCH --time=20:00:00
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=gjers043@umn.edu
+#SBATCH -p msigpu
+#SBATCH --gres=gpu:a100:1
+#SBATCH --output=output/msi_run.txt
+
+# Locate Conda Profile and Environment
+source ~/.bashrc
+source /users/6/gjers043/anaconda3/etc/profile.d/conda.sh
+conda activate main-env
+
+# Load Modules
+module load cuda/11.8.0-gcc-7.2.0-xqzqlf2
+
+# Run Script
+cd /users/6/gjers043/umn-fall2025-csci5523-project/src/
+CUDA_VISIBLE_DEVICES=0 python3 main.py

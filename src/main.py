@@ -146,10 +146,12 @@ forest1_test_results = evaluate_sklearn_model(forest1, X1_test, y1_test)
 print("  -> Evaluation finished. Here are the results:")
 print("       Validation Set (MIG1) Results:")
 for metric_name, val in forest1_results.items():
-    print(f"        * {metric_name}: {val}")
+    if metric_name != 'roc_curve':
+        print(f"        * {metric_name}: {val}")
 print("       Test Set (MIG1) Results:")
 for metric_name, val in forest1_test_results.items():
-    print(f"        * {metric_name}: {val}")
+    if metric_name != 'roc_curve':
+        print(f"        * {metric_name}: {val}")
 
 # Train and Evaluate for MIG5
 print("\n  -> Training started for random forest on MIG5...")
@@ -160,10 +162,12 @@ forest5_test_results = evaluate_sklearn_model(forest5, X5_test, y5_test)
 print("  -> Evaluation finished. Here are the results:")
 print("       Validation Set (MIG5) Results:")
 for metric_name, val in forest5_results.items():
-    print(f"        * {metric_name}: {val}")
+    if metric_name != 'roc_curve':
+        print(f"        * {metric_name}: {val}")
 print("       Test Set (MIG5) Results:")
 for metric_name, val in forest5_test_results.items():
-    print(f"        * {metric_name}: {val}")
+    if metric_name != 'roc_curve':
+        print(f"        * {metric_name}: {val}")
 
 # Export Results
 with open(RESULTS_PATH, 'rb') as f:
@@ -222,10 +226,12 @@ svc5_test_results = evaluate_sklearn_model(svc5, X5_test, y5_test)
 print("  -> Evaluation finished. Here are the results:")
 print("       Validation Set (MIG5) Results:")
 for metric_name, val in svc5_results.items():
-    print(f"        * {metric_name}: {val}")
+    if metric_name != 'roc_curve':
+        print(f"        * {metric_name}: {val}")
 print("       Test Set (MIG5) Results:")
 for metric_name, val in svc5_test_results.items():
-    print(f"        * {metric_name}: {val}")
+    if metric_name != 'roc_curve':
+        print(f"        * {metric_name}: {val}")
 
 # Export Results
 with open(RESULTS_PATH, 'rb') as f:
@@ -267,7 +273,8 @@ nn1_test_results = evaluate_neural_net(nn1, X1_test, y1_test)
 print("  -> Evaluation finished. Here are the results:")
 print("       Test Set (MIG1) Results:")
 for metric_name, val in nn1_test_results.items():
-    print(f"        * {metric_name}: {val}")
+    if metric_name != 'roc_curve':
+        print(f"        * {metric_name}: {val}")
 
 # Train and Evaluate for MIG5
 print("  -> Training started for neural network on MIG5...")
@@ -278,7 +285,8 @@ nn5_test_results = evaluate_neural_net(nn5, X5_test, y5_test)
 print("  -> Evaluation finished. Here are the results:")
 print("       Test Set (MIG5) Results:")
 for metric_name, val in nn5_test_results.items():
-    print(f"        * {metric_name}: {val}")
+    if metric_name != 'roc_curve':
+        print(f"        * {metric_name}: {val}")
 
 # Export Results
 with open(RESULTS_PATH, 'rb') as f:

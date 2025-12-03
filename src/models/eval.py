@@ -7,7 +7,8 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
     f1_score,
-    roc_auc_score
+    roc_auc_score,
+    roc_curve
 )
 
 def compute_metrics_dict(y_true, y_pred, y_prob) -> dict:
@@ -21,7 +22,8 @@ def compute_metrics_dict(y_true, y_pred, y_prob) -> dict:
         'precision': precision_score(y_true, y_pred, average='weighted'),
         'recall': recall_score(y_true, y_pred, average='weighted'),
         'f1': f1_score(y_true, y_pred, average='weighted'),
-        'roc_auc': roc_auc_score(y_true, y_prob)
+        'roc_auc': roc_auc_score(y_true, y_prob),
+        'roc_curve': roc_curve(y_true, y_prob)
     }
 
     return metrics
