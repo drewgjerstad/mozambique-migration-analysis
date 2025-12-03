@@ -7,7 +7,7 @@ from pathlib import Path
 from ipumspy import IpumsApiClient, MicrodataExtract, readers#, ddi
 import pandas as pd
 
-from .preprocessing import (
+from src.utils.preprocessing import (
     update_df_labels,
     transform_df,
     process_mig_response,
