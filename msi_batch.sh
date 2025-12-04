@@ -1,6 +1,7 @@
 #!/bin/bash -l
 
 # SETUP RESOURCE
+#SBATCH -A csci4521
 #SBATCH --time=20:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
