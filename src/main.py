@@ -50,6 +50,7 @@ with open(MODELS_PATH, 'wb') as f:
 f.close()
 
 # Define Hyperparameters
+N_JOBS = 4
 SEED = 5523
 VAL_RATIO = 0.15
 TEST_RATIO = 0.15
@@ -134,8 +135,8 @@ print(f"  Shape of MIG5 test: {X5_test.shape}")
 print("Starting random forest classifier...")
 
 # Initialize classifiers
-forest1 = RandomForestClassifier(n_jobs=-1)
-forest5 = RandomForestClassifier(n_jobs=-1)
+forest1 = RandomForestClassifier(n_jobs=N_JOBS)
+forest5 = RandomForestClassifier(n_jobs=N_JOBS)
 
 # Train and Evaluate for MIG1
 print("  -> Training started for random forest on MIG1...")
