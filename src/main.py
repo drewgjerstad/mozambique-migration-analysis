@@ -28,7 +28,7 @@ RESULTS_PATH = EXPORTS_DIR / "results.pkl"
 MODELS_PATH = EXPORTS_DIR / "models.pkl"
 EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-# Initialize Storage in Pickle Files TODO: add space for MIG1 and MIG5
+# Initialize Storage in Pickle Files
 with open(RESULTS_PATH, 'wb') as f:
     results = {'random_forest': {'validation1': None, 'test1': None,
                                  'validation5': None, 'test5': None},
