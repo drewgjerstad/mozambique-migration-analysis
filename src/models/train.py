@@ -36,7 +36,8 @@ def train_sklearn_model(model, param_grid, X_train, y_train, X_val, y_val):
     # Print Validation Set Performance
     print("\nValidation Set Performance:")
     for metric, val in metrics.items():
-        print(f"{metric}: {val:.4f}")
+        if metric != "roc_curve":
+            print(f"{metric}: {val:.4f}")
 
     # Print Feature Importance Analysis
     if hasattr(best_model, 'feature_importances_'):
