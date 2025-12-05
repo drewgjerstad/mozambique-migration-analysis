@@ -14,7 +14,7 @@ def train_sklearn_model(model, param_grid, X_train, y_train, X_val, y_val):
     grid_search = GridSearchCV(
         estimator=model,
         param_grid=param_grid,
-        cv=3,
+        cv=2,
         scoring='f1_weighted',
         n_jobs=-1,
         verbose=True,

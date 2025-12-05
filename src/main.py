@@ -52,6 +52,7 @@ f.close()
 # Define Hyperparameters
 N_JOBS = 4
 SEED = 5523
+CV_RATIO = 0.20
 VAL_RATIO = 0.15
 TEST_RATIO = 0.15
 TRAIN_RATIO = 1 - VAL_RATIO - TEST_RATIO
@@ -131,6 +132,21 @@ print(f"  Shape of MIG5 validation: {X5_val.shape}")
 print(f"  Shape of MIG5 test: {X5_test.shape}")
 
 
+# Create Training Samples for CV ===============================================
+print("\nCreating random subsets of training data for cross-validation...")
+X1_train_sample, _, y1_train_sample, _ = train_test_split(
+    X1_train, y1_train, train_size=CV_RATIO, random_state=SEED, stratify=y1_train
+)
+
+X5_train_sample, _, y5_train_sample, _ = train_test_split(
+    X5_train, y5_train, train_size=CV_RATIO, random_state=SEED, stratify=y5_train
+)
+
+print("Created random subsets of training data for cross-validation.")
+print(f"  Shape of MIG1 train sample: {X1_train_sample.shape}")
+print(f"  Shape of MIG5 train sample: {X5_train_sample.shape}")
+# ==============================================================================
+
 # Random Forest Classifier =====================================================
 print("Starting random forest classifier...")
 
@@ -139,9 +155,14 @@ forest1 = RandomForestClassifier(n_jobs=N_JOBS)
 forest5 = RandomForestClassifier(n_jobs=N_JOBS)
 
 # Train and Evaluate for MIG1
-print("  -> Training started for random forest on MIG1...")
+print("  -> Tuning random forest hyperparameters on MIG1 training sample...")
 forest1, forest1_results = train_sklearn_model(
-    forest1, forest_param_grid, X1_train, y1_train, X1_val, y1_val)
+    forest1, forest_param_grid, X1_train_sample, y1_train_sample, X1_val, y1_val)
+print("  -> Tuning finished. Training final model on full MIG1 training set...")
+best_forest_params1 = forest1.get_params()
+forest1 = RandomForestClassifier(**{k: v for k, v in best_forest_params1.items()
+                                    if k in forest_param_grid.keys()})
+forest1.fit(X1_train, y1_train)
 print("  -> Training finished. Evaluation started...")
 forest1_test_results = evaluate_sklearn_model(forest1, X1_test, y1_test)
 print("  -> Evaluation finished. Here are the results:")
@@ -155,9 +176,13 @@ for metric_name, val in forest1_test_results.items():
         print(f"        * {metric_name}: {val}")
 
 # Train and Evaluate for MIG5
-print("\n  -> Training started for random forest on MIG5...")
+print("\n  -> Tuning random forest hyperparameters on MIG5 training sample...")
 forest5, forest5_results = train_sklearn_model(
-    forest5, forest_param_grid, X5_train, y5_train, X5_val, y5_val)
+    forest5, forest_param_grid, X5_train_sample, y5_train_sample, X5_val, y5_val)
+print("  -> Tuning finished. Training final model on full MIG5 training set...")
+best_forest_params5 = forest5.get_params()
+forest5 = RandomForestClassifier(**{k: v for k, v in best_forest_params5.items()
+                                    if k in forest_param_grid.keys()})
 print("  -> Training finished. Evaluation started...")
 forest5_test_results = evaluate_sklearn_model(forest5, X5_test, y5_test)
 print("  -> Evaluation finished. Here are the results:")
@@ -205,9 +230,13 @@ svc1 = SVC(max_iter=10_000)
 svc5 = SVC(max_iter=10_000)
 
 # Train and Evaluate for MIG1
-print("  -> Training started for support vector classifier on MIG1...")
+print("  -> Tuning support vector hyperparameters on MIG1 training sample...")
 svc1, svc1_results = train_sklearn_model(
-    svc1, svc_param_grid, X1_train, y1_train, X1_val, y1_val)
+    svc1, svc_param_grid, X1_train_sample, y1_train_sample, X1_val, y1_val)
+print("  -> Tuning finished. Training model on full MIG1 training set...")
+best_svc_params1 = svc1.get_params()
+svc1 = SVC(**{k: v for k, v in best_svc_params1.items()
+              if k in svc_param_grid.keys()})
 print("  -> Training finished. Evaluation started...")
 svc1_test_results = evaluate_sklearn_model(svc1, X1_test, y1_test)
 print("  -> Evaluation finished. Here are the results:")
@@ -219,9 +248,13 @@ for metric_name, val in svc1_test_results.items():
     print(f"        * {metric_name}: {val}")
 
 # Train and Evaluate for MIG5
-print("\n  -> Training started for support vector classifier on MIG5...")
+print("\n  -> Tuning support vector hyperparameters on MIG5 training sample...")
 svc5, svc5_results = train_sklearn_model(
-    svc5, svc_param_grid, X5_train, y5_train, X5_val, y5_val)
+    svc5, svc_param_grid, X5_train_sample, y5_train_sample, X5_val, y5_val)
+print("  -> Tuning finished. Training model on full MIG5 training set...")
+best_svc_params5 = svc5.get_params()
+svc5 = SVC(**{k: v for k, v in best_svc_params5.items()
+              if k in svc_param_grid.keys()})
 print("  -> Training finished. Evaluation started...")
 svc5_test_results = evaluate_sklearn_model(svc5, X5_test, y5_test)
 print("  -> Evaluation finished. Here are the results:")

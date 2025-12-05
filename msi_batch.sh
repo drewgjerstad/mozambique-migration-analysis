@@ -2,7 +2,7 @@
 
 # SETUP RESOURCE
 #SBATCH -A csci4521
-#SBATCH --time=20:00:00
+#SBATCH --time=23:59:59
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=128gb
