@@ -4,6 +4,10 @@ classification models applied to the Mozambique dataset with the goal of
 classifying census samples' migration status. While a notebook exists in the
 main directory of this repo that does a similar job, the tuning is best run on
 high-performance GPUs--such as those found on MSI.
+
+Note that the SVC model has been removed. This is due to the empirical
+computational infeasibility on this dataset: over 20 hours spent without
+convergence on sample data and the other models were more promising.
 """
 
 # Load Dependencies
@@ -12,7 +16,6 @@ import pickle
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
 
 from src.utils.ipums_extract import load_ipums_from_pkl
 from src.models.train import train_sklearn_model
@@ -32,8 +35,6 @@ EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
 with open(RESULTS_PATH, 'wb') as f:
     results = {'random_forest': {'validation1': None, 'test1': None,
                                  'validation5': None, 'test5': None},
-               'support_vector': {'validation1': None, 'test1': None,
-                                  'validation5': None, 'test5': None},
                'neural_network': {'validation1': None, 'test1': None,
                                   'validation5': None, 'test5': None}}
     pickle.dump(results, f, pickle.HIGHEST_PROTOCOL)
@@ -42,8 +43,6 @@ f.close()
 with open(MODELS_PATH, 'wb') as f:
     models = {'random_forest1': None,
               'random_forest5': None,
-              'support_vector1': None,
-              'support_vector5': None,
               'neural_network1': None,
               'neural_network5': None}
     pickle.dump(models, f, pickle.HIGHEST_PROTOCOL)
@@ -70,17 +69,17 @@ forest_param_grid = {
     'random_state': [SEED]
 }
 
-svc_param_grid = {
-    'C': [0.1, 1, 10],
-    'kernel': ['rbf', 'linear'],
-    'gamma': ['scale'],
-    'class_weight': ['balanced'],
-    'random_state': [SEED],
-    'probability': [True]
-}
+#svc_param_grid = {
+#    'C': [0.1, 1, 10],
+#    'kernel': ['rbf', 'linear'],
+#    'gamma': ['scale'],
+#    'class_weight': ['balanced'],
+#    'random_state': [SEED],
+#    'probability': [True]
+#}
 
 # Define Hyperparameters for Neural Network
-N_EPOCHS = 50
+N_EPOCHS = 20
 BATCH_SIZE = 1024
 LEARNING_RATE = 0.001
 
@@ -221,81 +220,6 @@ with open(MODELS_PATH, 'wb') as f:
 print(f"Random forest classifiers saved to {MODELS_PATH} .")
 
 print("Finished random forest classifier.")
-# ==============================================================================
-
-# Support Vector Classifier ====================================================
-print("\nStarting support vector classifier...")
-
-# Initialize classifiers
-svc1 = SVC(max_iter=10_000)
-svc5 = SVC(max_iter=10_000)
-
-# Train and Evaluate for MIG1
-print("  -> Tuning support vector hyperparameters on MIG1 training sample...")
-svc1, svc1_results = train_sklearn_model(
-    svc1, svc_param_grid, X1_train_sample, y1_train_sample, X1_val, y1_val)
-print("  -> Tuning finished. Training model on full MIG1 training set...")
-best_svc_params1 = svc1.get_params()
-svc1 = SVC(**{k: v for k, v in best_svc_params1.items()
-              if k in svc_param_grid.keys()})
-svc1.fit(X1_train, y1_train)
-print("  -> Training finished. Evaluation started...")
-svc1_test_results = evaluate_sklearn_model(svc1, X1_test, y1_test)
-print("  -> Evaluation finished. Here are the results:")
-print("       Validation Set (MIG1) Results:")
-for metric_name, val in svc1_results.items():
-    print(f"        * {metric_name}: {val}")
-print("       Test Set (MIG1) Results:")
-for metric_name, val in svc1_test_results.items():
-    print(f"        * {metric_name}: {val}")
-
-# Train and Evaluate for MIG5
-print("\n  -> Tuning support vector hyperparameters on MIG5 training sample...")
-svc5, svc5_results = train_sklearn_model(
-    svc5, svc_param_grid, X5_train_sample, y5_train_sample, X5_val, y5_val)
-print("  -> Tuning finished. Training model on full MIG5 training set...")
-best_svc_params5 = svc5.get_params()
-svc5 = SVC(**{k: v for k, v in best_svc_params5.items()
-              if k in svc_param_grid.keys()})
-svc5.fit(X5_train, y5_train)
-print("  -> Training finished. Evaluation started...")
-svc5_test_results = evaluate_sklearn_model(svc5, X5_test, y5_test)
-print("  -> Evaluation finished. Here are the results:")
-print("       Validation Set (MIG5) Results:")
-for metric_name, val in svc5_results.items():
-    if metric_name != 'roc_curve':
-        print(f"        * {metric_name}: {val}")
-print("       Test Set (MIG5) Results:")
-for metric_name, val in svc5_test_results.items():
-    if metric_name != 'roc_curve':
-        print(f"        * {metric_name}: {val}")
-
-# Export Results
-with open(RESULTS_PATH, 'rb') as f:
-    results = pickle.load(f)
-
-results['support_vector']['validation1'] = svc1_results
-results['support_vector']['test1'] = svc1_test_results
-results['support_vector']['validation5'] = svc5_results
-results['support_vector']['test5'] = svc5_test_results
-
-with open(RESULTS_PATH, 'wb') as f:
-    pickle.dump(results, f, pickle.HIGHEST_PROTOCOL)
-
-print(f"Support vector classifier results saved to {RESULTS_PATH} .")
-
-with open(MODELS_PATH, 'rb') as f:
-    models = pickle.load(f)
-
-models['support_vector1'] = svc1
-models['support_vector5'] = svc5
-
-with open(MODELS_PATH, 'wb') as f:
-    pickle.dump(models, f, pickle.HIGHEST_PROTOCOL)
-
-print(f"Support vector classifiers saved to {MODELS_PATH} .")
-
-print("Finished support vector classifier.")
 # ==============================================================================
 
 # Neural Network ===============================================================

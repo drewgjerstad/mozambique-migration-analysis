@@ -104,7 +104,7 @@ def train_neural_net(X_train, y_train, X_val, y_val, n_epochs=50,
     # Training Loop
     best_val_loss = float('inf')
     patience_counter = 0
-    patience = 10
+    patience = 5
     history = {
         'train_loss': [],
         'val_loss': [],
