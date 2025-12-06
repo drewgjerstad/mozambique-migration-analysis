@@ -1,0 +1,184 @@
+Loaded Mozambique migration datasets from /users/6/gjers043/umn-fall2025-csci5523-project/data/mozambique.pkl .
+  Shape of mig1_df: (5929529, 66)
+  Shape of mig5_df: (4974569, 66)
+
+Creating development splits...
+Created development splits for MIG1 and MIG5.
+  Shape of MIG1 train: (4150669, 65)
+  Shape of MIG1 validation: (889430, 65)
+  Shape of MIG1 test: (889430, 65)
+  Shape of MIG5 train: (3482197, 65)
+  Shape of MIG5 validation: (746186, 65)
+  Shape of MIG5 test: (746186, 65)
+
+Creating random subsets of training data for cross-validation...
+Created random subsets of training data for cross-validation.
+  Shape of MIG1 train sample: (830133, 65)
+  Shape of MIG5 train sample: (696439, 65)
+Starting random forest classifier...
+  -> Tuning random forest hyperparameters on MIG1 training sample...
+Fitting 2 folds for each of 16 candidates, totalling 32 fits
+Best Hyperparameters:
+bootstrap: True
+class_weight: balanced
+max_depth: 20
+max_features: sqrt
+min_samples_leaf: 2
+min_samples_split: 5
+n_estimators: 100
+random_state: 5523
+Best CV F1 Score: 0.9238
+
+Validation Set Performance:
+accuracy: 0.8480
+precision: 0.9814
+recall: 0.8480
+f1: 0.9074
+roc_auc: 0.7483
+T
+op 10 Most Important Features
+         feature  importance
+16     YEAR_2017    0.114133
+1      OWNERSHIP    0.064576
+11           LIT    0.063668
+0          URBAN    0.059791
+4       RESIDENT    0.041577
+15     YEAR_2007    0.035204
+22  HHTYPE_OTHER    0.034811
+5            SEX    0.034617
+26    BP_FOREIGN    0.029051
+6        MORTMOT    0.026747
+  -> Tuning finished. Training final model on full MIG1 training set...
+  -> Training finished. Evaluation started...
+  -> Evaluation finished. Here are the results:
+       Validation Set (MIG1) Results:
+        * accuracy: 0.8480330099052202
+        * precision: 0.9813720423421863
+        * recall: 0.8480330099052202
+        * f1: 0.9073687952305889
+        * roc_auc: 0.7483178165583293
+       Test Set (MIG1) Results:
+        * accuracy: 0.7901116445363885
+        * precision: 0.983023856783966
+        * recall: 0.7901116445363885
+        * f1: 0.8722808236819479
+        * roc_auc: 0.7817834176325251
+
+  -> Tuning random forest hyperparameters on MIG5 training sample...
+Fitting 2 folds for each of 16 candidates, totalling 32 fits
+Best Hyperparameters:
+bootstrap: True
+class_weight: balanced
+max_depth: 20
+max_features: sqrt
+min_samples_leaf: 2
+min_samples_split: 5
+n_estimators: 200
+random_state: 5523
+Best CV F1 Score: 0.8328
+
+Validation Set Performance:
+accuracy: 0.7480
+precision: 0.9405
+recall: 0.7480
+f1: 0.8206
+roc_auc: 0.7948
+T
+op 10 Most Important Features
+        feature  importance
+1     OWNERSHIP    0.176706
+14    YEAR_1997    0.104298
+16    YEAR_2017    0.082674
+0         URBAN    0.052287
+26   BP_FOREIGN    0.046192
+27  BP_DOMESTIC    0.041427
+8      NATIVITY    0.037207
+11          LIT    0.036768
+7       MORTFAT    0.027734
+15    YEAR_2007    0.026090
+  -> Tuning finished. Training final model on full MIG5 training set...
+  -> Training finished. Evaluation started...
+  -> Evaluation finished. Here are the results:
+       Validation Set (MIG5) Results:
+        * accuracy: 0.7479984883125655
+        * precision: 0.9405434187166621
+        * recall: 0.7479984883125655
+        * f1: 0.8206002823225892
+        * roc_auc: 0.7947966490832442
+       Test Set (MIG5) Results:
+        * accuracy: 0.7221081606998792
+        * precision: 0.9436180730956482
+        * recall: 0.7221081606998792
+        * f1: 0.8028603361568099
+        * roc_auc: 0.806828233986214
+Random forest results saved to /users/6/gjers043/umn-fall2025-csci5523-project/src/exports/results.pkl .
+Random forest classifiers saved to /users/6/gjers043/umn-fall2025-csci5523-project/src/exports/models.pkl .
+Finished random forest classifier.
+
+Starting neural network...
+  -> Training started for neural network on MIG1...
+Epoch 1/20 | Train Loss: 0.5466, Val Loss: 0.5355, Val F1: 0.8373
+Epoch 2/20 | Train Loss: 0.5386, Val Loss: 0.5352, Val F1: 0.8288
+Epoch 3/20 | Train Loss: 0.5359, Val Loss: 0.5342, Val F1: 0.8527
+Epoch 4/20 | Train Loss: 0.5348, Val Loss: 0.5321, Val F1: 0.8446
+Epoch 5/20 | Train Loss: 0.5336, Val Loss: 0.5323, Val F1: 0.8539
+Epoch 6/20 | Train Loss: 0.5326, Val Loss: 0.5311, Val F1: 0.8412
+Epoch 7/20 | Train Loss: 0.5321, Val Loss: 0.5312, Val F1: 0.8512
+Epoch 8/20 | Train Loss: 0.5316, Val Loss: 0.5318, Val F1: 0.8432
+Epoch 9/20 | Train Loss: 0.5316, Val Loss: 0.5338, Val F1: 0.8546
+Epoch 10/20 | Train Loss: 0.5315, Val Loss: 0.5307, Val F1: 0.8427
+Epoch 11/20 | Train Loss: 0.5309, Val Loss: 0.5307, Val F1: 0.8527
+Epoch 12/20 | Train Loss: 0.5300, Val Loss: 0.5305, Val F1: 0.8497
+Epoch 13/20 | Train Loss: 0.5304, Val Loss: 0.5309, Val F1: 0.8530
+Epoch 14/20 | Train Loss: 0.5309, Val Loss: 0.5302, Val F1: 0.8524
+Epoch 15/20 | Train Loss: 0.5298, Val Loss: 0.5298, Val F1: 0.8432
+Epoch 16/20 | Train Loss: 0.5296, Val Loss: 0.5313, Val F1: 0.8355
+Epoch 17/20 | Train Loss: 0.5296, Val Loss: 0.5303, Val F1: 0.8542
+Epoch 18/20 | Train Loss: 0.5294, Val Loss: 0.5314, Val F1: 0.8415
+Epoch 19/20 | Train Loss: 0.5288, Val Loss: 0.5305, Val F1: 0.8494
+Epoch 20/20 | Train Loss: 0.5287, Val Loss: 0.5314, Val F1: 0.8585
+Early stopping at epoch 20
+  -> Training finished. Evaluation started...
+  -> Evaluation finished. Here are the results:
+       Test Set (MIG1) Results:
+        * accuracy: 0.7673588702877123
+        * precision: 0.9841239415943286
+        * recall: 0.7673588702877123
+        * f1: 0.8578093594094883
+        * roc_auc: 0.8108309540711967
+  -> Training started for neural network on MIG5...
+Epoch 1/20 | Train Loss: 0.5383, Val Loss: 0.5276, Val F1: 0.7767
+Epoch 2/20 | Train Loss: 0.5312, Val Loss: 0.5253, Val F1: 0.7895
+Epoch 3/20 | Train Loss: 0.5297, Val Loss: 0.5250, Val F1: 0.7829
+Epoch 4/20 | Train Loss: 0.5286, Val Loss: 0.5245, Val F1: 0.7821
+Epoch 5/20 | Train Loss: 0.5281, Val Loss: 0.5249, Val F1: 0.7783
+Epoch 6/20 | Train Loss: 0.5275, Val Loss: 0.5244, Val F1: 0.7897
+Epoch 7/20 | Train Loss: 0.5272, Val Loss: 0.5241, Val F1: 0.7776
+Epoch 8/20 | Train Loss: 0.5267, Val Loss: 0.5239, Val F1: 0.7915
+Epoch 9/20 | Train Loss: 0.5264, Val Loss: 0.5237, Val F1: 0.7846
+Epoch 10/20 | Train Loss: 0.5264, Val Loss: 0.5236, Val F1: 0.7830
+Epoch 11/20 | Train Loss: 0.5261, Val Loss: 0.5235, Val F1: 0.7917
+Epoch 12/20 | Train Loss: 0.5258, Val Loss: 0.5235, Val F1: 0.7925
+Epoch 13/20 | Train Loss: 0.5256, Val Loss: 0.5237, Val F1: 0.7873
+Epoch 14/20 | Train Loss: 0.5257, Val Loss: 0.5238, Val F1: 0.7874
+Epoch 15/20 | Train Loss: 0.5253, Val Loss: 0.5228, Val F1: 0.7844
+Epoch 16/20 | Train Loss: 0.5252, Val Loss: 0.5225, Val F1: 0.7875
+Epoch 17/20 | Train Loss: 0.5253, Val Loss: 0.5231, Val F1: 0.7802
+Epoch 18/20 | Train Loss: 0.5251, Val Loss: 0.5230, Val F1: 0.7774
+Epoch 19/20 | Train Loss: 0.5253, Val Loss: 0.5230, Val F1: 0.7766
+Epoch 20/20 | Train Loss: 0.5249, Val Loss: 0.5236, Val F1: 0.7938
+  -> Training finished. Evaluation started...
+  -> Evaluation finished. Here are the results:
+       Test Set (MIG5) Results:
+        * accuracy: 0.7092574773581922
+        * precision: 0.9450557359707489
+        * recall: 0.7092574773581922
+        * f1: 0.7938038073775064
+        * roc_auc: 0.813866865405949
+Neural networks results saved to /users/6/gjers043/umn-fall2025-csci5523-project/src/exports/results.pkl .
+Neural networks saved to /users/6/gjers043/umn-fall2025-csci5523-project/src/exports/models.pkl .
+Finished neural network.
+
+Complete.
+  -> Results saved to: /users/6/gjers043/umn-fall2025-csci5523-project/src/exports/results.pkl
+  -> Models saved to: /users/6/gjers043/umn-fall2025-csci5523-project/src/exports/models.pkl
