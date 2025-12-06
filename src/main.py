@@ -38,7 +38,6 @@ with open(RESULTS_PATH, 'wb') as f:
                'neural_network': {'validation1': None, 'test1': None,
                                   'validation5': None, 'test5': None}}
     pickle.dump(results, f, pickle.HIGHEST_PROTOCOL)
-f.close()
 
 with open(MODELS_PATH, 'wb') as f:
     models = {'random_forest1': None,
@@ -46,7 +45,6 @@ with open(MODELS_PATH, 'wb') as f:
               'neural_network1': None,
               'neural_network5': None}
     pickle.dump(models, f, pickle.HIGHEST_PROTOCOL)
-f.close()
 
 # Define Hyperparameters
 N_JOBS = 4
