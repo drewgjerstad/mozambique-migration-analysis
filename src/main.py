@@ -26,7 +26,7 @@ from src.models.neural_net import (
 )
 
 # Define Paths to Store Models and Results
-EXPORTS_DIR = Path(__file__).parent / "exports"
+EXPORTS_DIR = Path(__file__).parent.parent / "exports"
 RESULTS_PATH = EXPORTS_DIR / "results.pkl"
 MODELS_PATH = EXPORTS_DIR / "models.pkl"
 EXPORTS_DIR.mkdir(parents=True, exist_ok=True)

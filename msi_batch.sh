@@ -10,7 +10,7 @@
 #SBATCH --mail-user=gjers043@umn.edu
 #SBATCH -p msigpu
 #SBATCH --gres=gpu:a100:1
-#SBATCH --output=output/msi_run.txt
+#SBATCH --output=exports/msi_run.txt
 
 # Locate Conda Profile and Environment
 source ~/.bashrc
