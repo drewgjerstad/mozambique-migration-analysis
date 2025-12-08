@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
-def generate_confusion_matrix(y_true, y_pred, labels=None):
+def generate_confusion_matrix(y_true, y_pred, labels=None, export=None):
     """Generate confusion matrix given true and predicted labels."""
     if not labels:
         labels = np.unique(y_true).tolist()
@@ -14,10 +14,12 @@ def generate_confusion_matrix(y_true, y_pred, labels=None):
     cm = confusion_matrix(y_true, y_pred, labels=labels)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
     disp.plot()
+    if export:
+        plt.savefig(export)
     plt.show()
 
 
-def plot_roc_curve(tpr, fpr, auc=None):
+def plot_roc_curve(tpr, fpr, auc=None, export=None):
     """Generate ROC curve given true and probabilistic labels."""
     plt.figure(figsize=(6, 6))
     plt.plot(fpr, tpr, c='b')
@@ -29,4 +31,6 @@ def plot_roc_curve(tpr, fpr, auc=None):
     else:
         plt.title("ROC Curve")
     plt.grid(True)
+    if export:
+        plt.savefig(export)
     plt.show()
