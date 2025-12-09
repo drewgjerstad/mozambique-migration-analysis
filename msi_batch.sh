@@ -21,6 +21,6 @@ conda activate main-env
 module load cuda/11.8.0-gcc-7.2.0-xqzqlf2
 
 # Run Script
-cd /users/6/gjers043/umn-fall2025-csci5523-project/
+cd /users/6/gjers043/mozambique-migration-analysis/
 CUDA_VISIBLE_DEVICES=0 python3 -m src.main
 CUDA_VISIBLE_DEVICES=0 python3 -m src.analysis
