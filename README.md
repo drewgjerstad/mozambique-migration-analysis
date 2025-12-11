@@ -30,10 +30,13 @@ aiming to develop a principled data preprocessing pipeline for the dataset as
 there are several considerations that must be made.
 
 ## Our Approaches
+<img src="assets/data-pipeline.png" alt="Data pipeline" height="400">
 
 ### Data Preparation
 
 ### Classification Analysis
+
+<img src="assets/neural-net-arch.png" alt="Neural network architecture" height="400">
 
 ### Association Analysis
 
