@@ -30,11 +30,64 @@ aiming to develop a principled data preprocessing pipeline for the dataset as
 there are several considerations that must be made.
 
 ## Our Approaches
+The diagram below provides a high level overview of our approach to analyzing
+the Mozambique dataset using classification analysis. For our association
+analysis, we use the same data preprocessing shown on the left half of the
+diagram and then follow the steps outlined in the `association_analysis.ipynb`
+notebook.
+
 <img src="assets/data-pipeline.png" alt="Data pipeline" height="400">
 
 ### Data Preparation
+In this project, we used two main approaches to analyze the Mozambique dataset:
+classification analysis and association analysis. However, before applying any
+analytical techniques, we needed to the preprocess the dataset as the raw data
+is incompatible with many of these techniques. First, we obtain the the raw
+data extract from IPUMS International. Then, we removed rows missing response
+(`MIG1` and `MIG5`) values and any metadata or "detailed" columns which are not
+useful predictors. Note that "detailed" columns are more detailed versions of
+other columns but are not usually consistent across the census years and are
+thus not practical for our analyses. Next, we performed feature selection that
+was primarily motivated by several features having more than 90% missing values.
+
+After feature selection we formatted the features to handle the various
+attribute types in our dataset including binary, categorical, and continuous.
+Some of our features were already in some binary form (i.e., Yes or No, etc.)
+but needed to be converted to integer zeros and ones for consistency in our
+analyses. For categorical variables, we used the attribute value-pair approach
+to convert the categories into new features. Finally, we used binning methods to
+bin continuous features in our dataset. With the features sufficiently
+processed for our analysis methods, we saved the dataset into locally stored
+Python serial (pickle, .pkl) files for development purposes.
 
 ### Classification Analysis
+For our classification analysis we tried three different models: a random forest
+model, a support vector classifier, and an artificial neural network model. Note
+that during our prototyping and development phase, we had trouble getting the
+support vector classifier to converge on any sort of solution due to the nature
+of our dataset. Therefore, we dropped that model from our analysis which is why
+it is not shown in the diagram above.
+
+### Random Forest
+For our Random Forest, we used the `RandomForestClassifier` implementation from
+Scikit-Learn and performed hyperparameter tuning using grid search
+cross-validation on the following hyperparameters: number of estimators (trees)
+in the forest, maximum depth of each tree, minimum number of samples per split,
+and minimum samples per leaf node. We also used balanced class weights and
+bootstrapping. See `msi_run.txt` for output from the random forest models on
+each dataset.
+
+### Neural Network
+For our neural network model, we use a simple architecture shown in the figure
+below: four fully-connected layers (two of which are hidden layers) connected by
+a sequence of batch normalization, a ReLU activation of each layer's output, and
+dropout with $p=0.3$ to prevent model overfitting. We train our network across
+20 epochs with batches of 1024 samples and a learning rate of $\ell=0.001$. We
+use cross-entropy loss with class weightings to account for our severely
+imbalanced dataset and the `Adam` optimizer for optimizing our network weights.
+Finally, we incorporate a learning rate scheduler that reduces the learning
+rate as the network "stops learning" and incorporates "patience" for early
+stopping.
 
 <img src="assets/neural-net-arch.png" alt="Neural network architecture" height="400">
 
