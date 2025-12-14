@@ -32,11 +32,14 @@ there are several considerations that must be made.
 ## Our Approaches
 The diagram below provides a high level overview of our approach to analyzing
 the Mozambique dataset using classification analysis. For our association
-analysis, we use the same data preprocessing shown on the left half of the
-diagram and then follow the steps outlined in the `association_analysis.ipynb`
-notebook.
+analysis, we use the same data preprocessing shown on the left side of the
+figure and then follow standard procedures to generate candidate itemsets which
+are pruned using the Apriori algorithm for our association analysis. These steps
+are outlined in the `association_analysis.ipynb` notebook.
 
 <img src="assets/data-pipeline.png" alt="Data pipeline" height="400">
+
+_Figure 1: Data Preprocessing Pipeline_
 
 ### Data Preparation
 In this project, we used two main approaches to analyze the Mozambique dataset:
@@ -89,8 +92,62 @@ Finally, we incorporate a learning rate scheduler that reduces the learning
 rate as the network "stops learning" and incorporates "patience" for early
 stopping.
 
-<img src="assets/neural-net-arch.png" alt="Neural network architecture" height="400">
+<img src="assets/neural-net-arch.png" alt="Neural network architecture" height="350">
+
+_Figure 2: Neural Network Architecture_
 
 ### Association Analysis
+For our association analysis, we use the same data preprocessing workflow shown
+on the left-hand side of Figure 1. Similar to the classification analysis, each
+dataset was split into training, validation, and test sets. The goal of our
+association analysis was to identify rules that were not general associations as
+is typical in standard association analysis. Rather, we focus on finding rules
+of this form: _"Given these attributes and their corresponding values, the_
+_respondent has migrated."_ To begin, we run the Apriori algorithm on the
+training set. However, since our data has millions of records and 65 attributes,
+the traditional Apriori algorithm was not computationally tractable. Instead, we
+reformulate the problem given that we are focusing on rules that imply whether
+or not a respondent has migrated within the last year or within the last five
+years (MIG1 or MIG5, respectively). That is, we filter the dataset to include
+only rows corresponding to respondents that migrated and apply the Apriori
+algorithm to those records.
+
+We applied the Apriori algorithm using a minimum support threshold of 25%. This
+translates to identifying a subset of attributes in each dataset such that at
+least 25% of respondents that migrated had this subset. Note that while this
+threshold is higher than typical thresholds for association analysis, our goal
+of finding broadly generalizable rules motivates a higher minimum threshold---in
+addition to the fact that we have already filtered the dataset. The 6,000
+candidate rules produced for each dataset were evaluated using metrics including
+support, lift, confidence, and interest metrics. Furthermore, we also consider
+the length of the rule (i.e., how many attributes are in the rule's antecedent)
+since shorter rules are much more interpretable in this application. Finally, we
+applied each candidate rule as a de facto classifier on the validation set to
+find the "best" rule to use as a classifier on the unseen data in the test set.
 
 ## Results
+
+| | **Accuracy** | **Precision** | **Recall** | **F1 Score** | **AUC Score** |
+|-|--------------|---------------|------------|--------------|---------------|
+| **Random Forest** | 0.7901 | 0.9830 | 0.7901 | 0.8723 | 0.7818 |
+| **Neural Network** | 0.7674 | 0.9841 | 0.7674 | 0.8578 | 0.8108 |
+| **Association Rule** | 0.8414 | 0.5071 | 0.7345 | 0.4590 | 0.5792 |
+
+_Table 1: Test Set Performance for Each Model Predicting `MIG1`_
+
+| | **Accuracy** | **Precision** | **Recall** | **F1 Score** | **AUC Score** |
+|-|--------------|---------------|------------|--------------|---------------|
+| **Random Forest** | 0.7221 | 0.9436 | 0.7221 | 0.8029 | 0.8068 |
+| **Neural Network** | 0.7093 | 0.9451 | 0.7093 | 0.7938 | 0.8139 |
+| **Association Rule** | 0.7964 | 0.5112 | 0.6641 | 0.4941 | 0.5377 |
+
+_Table 2: Test Set Performance for Each Model Predicting `MIG5`_
+
+<img src="assets/roc-curves.png" alt="ROC curves" height="200">
+
+_Figure 3: Test Set ROC Curves_
+
+<img src="assets/confusion-matrices.png" alt="Confusion matrices" height="350">
+
+_Figure 4: Test Set Confusion Matrices_
+
